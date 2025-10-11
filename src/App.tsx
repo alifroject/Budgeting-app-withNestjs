@@ -1,48 +1,47 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import PublicLayout from './layouts/PublicLayout';
+import Login from './pages/public/login/Login';
+import OAuthCallback from './pages/public/login/OAuthCallback';
+
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (user) return <Navigate to="/dashboard" replace />;
+
+  return <PublicLayout>{children}</PublicLayout>;
+};
+
+function AppContent() {
+  return (
+    <Router>
+      <Routes>
+
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
+
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
+        <Route path="/dashboard" element={<div>Dashboard Coming Soon</div>} />
+      </Routes>
+    </Router>
+  );
+}
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
-      <header className="p-6">
-        <div className="text-2xl font-bold text-white">BudgetApp</div>
-      </header>
-
-      <main className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
-        <div className="max-w-2xl">
-          <h1 className="text-5xl font-bold text-white mb-6">
-            Simple Budgeting for 
-            <span className="text-emerald-400"> Everyone</span>
-          </h1>
-          <p className="text-xl text-slate-300 mb-8">
-            Track your income and expenses effortlessly. No complicated spreadsheets, just clear financial insights.
-          </p>
-          
-          <div className="flex gap-4 justify-center">
-            <button className="bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-colors">
-              Create Account
-            </button>
-            <button className="border border-slate-600 text-slate-300 px-8 py-3 rounded-lg font-semibold hover:bg-slate-800 transition-colors">
-              Learn More
-            </button>
-          </div>
-
-          <div className="mt-16 grid grid-cols-3 gap-8 text-slate-400">
-            <div>
-              <div className="text-2xl font-bold text-white">Free</div>
-              <div>Forever</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-white">Secure</div>
-              <div>Bank-level</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-white">Easy</div>
-              <div>5-min setup</div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
