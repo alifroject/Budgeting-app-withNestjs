@@ -8,14 +8,12 @@ const OAuthCallback: React.FC = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
-      // Get token from URL or make request to backend
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
       
       if (token) {
         localStorage.setItem('token', token);
         
-        // Get user data
         const response = await fetch('http://localhost:3001/auth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
