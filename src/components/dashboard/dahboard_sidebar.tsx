@@ -1,16 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
+import { useTheme } from '../../contexts/ThemeContext';
+
 interface DashboardSidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
 }
 
-const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ 
-  isCollapsed, 
-  onToggle 
+const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
+  isCollapsed,
+  onToggle
 }) => {
   const location = useLocation();
+  const { theme, toggleTheme }: any = useTheme();  
 
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
@@ -29,7 +32,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             <h1 className="font-bold text-xl">BudgetBuddy</h1>
           )}
         </div>
-        
+
         <button
           onClick={onToggle}
           className="p-2 rounded-lg hover:bg-blue-500 transition-colors"
@@ -50,18 +53,36 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             </div>
           )}
         </div>
+        <div className="mt-4 flex items-center justify-between">
+          {!isCollapsed && (
+            <span className="text-blue-200 text-sm">Dark Mode</span>
+          )}
+
+          <button
+            onClick={toggleTheme}
+            className={`w-12 h-6 rounded-full p-1 transition-colors ${
+              theme === 'dark' ? 'bg-blue-400' : 'bg-gray-300'
+            }`}
+          >
+            <div
+              className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                theme === 'dark' ? 'translate-x-6' : 'translate-x-0'
+              }`}
+            ></div>
+          </button>
+        </div>
       </div>
+      
       <nav className="flex-1 p-4">
         {menuItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg mb-2 transition-colors ${
-              location.pathname === item.path 
-                ? 'bg-blue-700 text-white' 
+            className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg mb-2 transition-colors ${location.pathname === item.path
+                ? 'bg-blue-700 text-white'
                 : 'text-blue-100 hover:bg-blue-500'
-            }`}
-            title={isCollapsed ? item.label : ''} 
+              }`}
+            title={isCollapsed ? item.label : ''}
           >
             <span className="text-xl">{item.icon}</span>
             {!isCollapsed && (

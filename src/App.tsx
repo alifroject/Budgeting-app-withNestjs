@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import DashboardLayout from './layouts/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
 import Login from './pages/public/login/Login';
@@ -43,9 +44,12 @@ function AppContent() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardLayout>
-                <Dashboard />
-              </DashboardLayout>
+              <ThemeProvider>
+                <DashboardLayout>
+                  <Dashboard />
+                </DashboardLayout>
+              </ThemeProvider>
+
             </ProtectedRoute>
           }
         />
@@ -53,9 +57,12 @@ function AppContent() {
           path="/transactions"
           element={
             <ProtectedRoute>
-              <DashboardLayout>
-                <div>Transactions Page Coming Soon</div>
-              </DashboardLayout>
+              <ThemeProvider >
+                <DashboardLayout>
+                  <div>Transactions Page Coming Soon</div>
+                </DashboardLayout>
+              </ThemeProvider>
+
             </ProtectedRoute>
           }
         />
@@ -63,9 +70,11 @@ function AppContent() {
           path="/budgets"
           element={
             <ProtectedRoute>
-              <DashboardLayout>
-                <div>Budgets Page Coming Soon</div>
-              </DashboardLayout>
+              <ThemeProvider>
+                <DashboardLayout>
+                  <div>Budgets Page Coming Soon</div>
+                </DashboardLayout>
+              </ThemeProvider>
             </ProtectedRoute>
           }
         />

@@ -7,25 +7,25 @@ interface PublicLayoutProps {
 
 const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-background">
+      <header className="bg-primary shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <Link to="/" className="text-2xl font-bold text-gray-900">
+            <Link to="/" className="text-2xl font-bold text-text-primary">
               BudgetBuddy
             </Link>
             <nav className="flex space-x-4">
-              <Link to="/login" className="text-gray-600 hover:text-gray-900">
+              <Link to="/login" className="text-text-secondary hover:text-text-primary">
                 Sign In
               </Link>
-              <Link to="/signup" className="text-gray-600 hover:text-gray-900">
+              <Link to="/signup" className="text-text-secondary hover:text-text-primary">
                 Sign Up
               </Link>
             </nav>
           </div>
         </div>
       </header>
-      
+
       <main>{children}</main>
     </div>
   );

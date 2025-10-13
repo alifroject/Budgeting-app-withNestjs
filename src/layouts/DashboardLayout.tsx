@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import DashboardSidebar from '../components/dashboard/dahboard_sidebar';
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <DashboardSidebar 
+    <div className="flex h-screen bg-background">
+      <DashboardSidebar
         isCollapsed={isSidebarCollapsed}
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
@@ -18,6 +18,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         {children}
       </div>
     </div>
+
   );
 };
 
