@@ -8,22 +8,40 @@ const OAuthCallback: React.FC = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
-      
-      if (token) {
-        localStorage.setItem('token', token);
+      try {
+        console.log('OAuthCallback: Checking cookies...');
+        console.log('All cookies:', document.cookie);
+        
+        // Wait a moment for the session cookie to be processed
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('OAuthCallback: Starting authentication check...');
         
         const response = await fetch('http://localhost:3001/auth/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
+        
+        console.log('OAuthCallback: Response status:', response.status);
+        console.log('OAuthCallback: Response headers:', response.headers);
         
         if (response.ok) {
           const userData = await response.json();
+          console.log('OAuthCallback: User data received:', userData);
           login(userData);
           navigate('/dashboard');
+        } else {
+          console.error('OAuthCallback: Authentication failed');
+          // Try one more time after a delay
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
         }
-      } else {
+      } catch (error) {
+        console.error('OAuthCallback: Network error:', error);
         navigate('/login');
       }
     };
@@ -31,7 +49,7 @@ const OAuthCallback: React.FC = () => {
     handleCallback();
   }, [login, navigate]);
 
-  return <div>Processing login...</div>;
+  return <div>Processing login... Checking session...</div>;
 };
 
 export default OAuthCallback;
