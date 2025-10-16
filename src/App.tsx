@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import DashboardLayout from './layouts/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
 import Login from './pages/public/login/Login';
+import Register from './pages/public/register/Register';
 import OAuthCallback from './pages/public/login/OAuthCallback';
 import Dashboard from './pages/dashboard/Dashboard';
 
@@ -21,10 +22,37 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { user, isLoading } = useAuth();
 
   if (isLoading) return <div>Loading...</div>;
+
   if (!user) return <Navigate to="/login" replace />;
 
   return <>{children}</>;
 };
+
+
+const UserRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'admin') return <Navigate to="/dashboard" replace />;
+
+  return <>{children}</>;
+};
+
+
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
+
+  return <>{children}</>;
+};
+
+
 
 function AppContent() {
   return (
@@ -35,6 +63,7 @@ function AppContent() {
           element={
             <PublicRoute>
               <Login />
+              <Register></Register>
             </PublicRoute>
           }
         />
@@ -56,30 +85,45 @@ function AppContent() {
         <Route
           path="/transactions"
           element={
-            <ProtectedRoute>
-              <ThemeProvider >
+            <UserRoute>
+              <ThemeProvider>
                 <DashboardLayout>
                   <div>Transactions Page Coming Soon</div>
                 </DashboardLayout>
               </ThemeProvider>
-
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
+
         <Route
           path="/budgets"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <ThemeProvider>
                 <DashboardLayout>
                   <div>Budgets Page Coming Soon</div>
                 </DashboardLayout>
               </ThemeProvider>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
 
+        <Route
+          path="/users"
+          element={
+            <AdminRoute>
+              <ThemeProvider>
+                <DashboardLayout>
+                  <div>Users Page Coming Soon</div>
+                </DashboardLayout>
+              </ThemeProvider>
+            </AdminRoute>
+          }
+        />
+
+
         <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/register" element={<Register></Register>} />
       </Routes>
     </Router>
   );
