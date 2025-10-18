@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 
 //redux
@@ -7,27 +7,16 @@ import { RootState, AppDispatch } from '../../store/store';
 import { getMe } from '../../features/authSlice';
 import axios from "axios";
 
-
 //theme
 import { useTheme } from '../../contexts/ThemeContext';
 
-
-
-interface BudgetItem {
-    id: number;
-    title: string;
-    category: string;
-    limitAmount: number;
-}
-
+// import 
+import { BudgetItem } from '../../types/budget';
+import { useBudget } from "../../hooks/useBudget";
 
 export const UserBudget: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { user } = useSelector((state: RootState) => state.auth);
-
-    //get budget
-    const [show, setShow] = useState(false)
-    const [budget, setBudget] = useState<BudgetItem[]>([])
+    const { budget, deleteBudget } = useBudget();
 
     //theme
     const { theme } = useTheme();
@@ -35,35 +24,6 @@ export const UserBudget: React.FC = () => {
     useEffect(() => {
         dispatch(getMe());
     }, [dispatch])
-
-    // get budget
-    useEffect(() => {
-        getBudget();
-        setTimeout(() => setShow(true), 10);
-    }, []);
-
-    const getBudget = async () => {
-        try {
-            const res = await axios.get("http://localhost:3001/budget", { withCredentials: true });
-            setBudget(res.data)
-        } catch (err: any) {
-            console.error('Error fetching budget', err)
-        }
-    }
-
-    const deleteUsers = async (budgetId: number | string): Promise<void> => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this user?");
-        if (!confirmDelete) return;
-
-        try {
-            await axios.delete(`http://localhost:3001/budget/${budgetId}`, { withCredentials: true });
-            setBudget(prev => prev.filter(item => item.id !== budgetId)); //realtime removal
-        } catch (error) {
-            console.error("Failed to delete budget:", error);
-        }
-    };
-
-
 
 
     return (
@@ -118,10 +78,8 @@ export const UserBudget: React.FC = () => {
                                             </button>
 
                                             <button
-                                                onClick={() => deleteUsers(item.id)}
-                                                className="px-3 py-1.5 text-sm font-medium rounded-md 
-                 bg-red-500 text-white hover:bg-red-600 
-                 shadow-sm hover:shadow-md transition-all duration-200"
+                                                onClick={() => deleteBudget(item.id)}
+                                                className="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 shadow-sm hover:shadow-md transition-all duration-200"
                                             >
                                                 Delete
                                             </button>
