@@ -2,8 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:3001";
+
 
 interface User {
     id: number;
@@ -16,7 +15,7 @@ export const loginUser = createAsyncThunk<User, { email: string; password: strin
     async ({ email, password }, { rejectWithValue }) => {
         try {
             const res = await axios.post(
-                '/auth/login',
+                'http://localhost:3001/auth/login',
                 { email, password },
                 { withCredentials: true }
             );
@@ -28,11 +27,12 @@ export const loginUser = createAsyncThunk<User, { email: string; password: strin
 );
 
 export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
-    const state: any = thunkAPI.getState();
-    if (state.auth.isLoading) return; // 👈 prevents repeated calls
     try {
-        const res = await axios.get('/auth/me');
-        return res.data;
+        const res = await axios.get('http://localhost:3001/auth/me', {
+            withCredentials: true,
+        });
+        console.log('getMe response:', res.data);
+        return res.data.user;
     } catch (err: any) {
         return thunkAPI.rejectWithValue(err.response?.data?.message || 'Unauthorized');
     }
@@ -40,7 +40,7 @@ export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
 
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, thunkAPI) => {
     try {
-        await axios.post('/auth/logout');
+        await axios.post('http://localhost:3001/auth/logout');
         return true;
     } catch (err: any) {
         return thunkAPI.rejectWithValue(err.response?.data?.message || 'Logout failed');
@@ -50,13 +50,15 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, thunkAPI
 interface AuthState {
     user: any | null;
     isLoading: boolean;
-    error: string | null
+    error: string | null;
+    isFetched: boolean;
 }
 
 const initialState: AuthState = {
     user: null,
     isLoading: false,
-    error: null
+    error: null,
+    isFetched: false
 }
 
 
@@ -79,10 +81,12 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.user = action.payload;
+                state.isFetched = true;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
+                state.isFetched = true;
             });
 
         // GET ME
@@ -94,11 +98,13 @@ const authSlice = createSlice({
             .addCase(getMe.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.user = action.payload;
+                state.isFetched = true;
             })
             .addCase(getMe.rejected, (state, action) => {
                 state.isLoading = false;
                 state.user = null;
                 state.error = action.payload as string;
+                state.isFetched = true;
             });
 
         // LOGOUT
