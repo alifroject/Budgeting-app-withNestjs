@@ -1,131 +1,163 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
-//redux
 import { useDispatch, useSelector } from 'react-redux';
 import { getMe, logoutUser } from '../../features/authSlice';
 import { RootState, AppDispatch } from '../../store/store';
-
 import { useTheme } from '../../contexts/ThemeContext';
+
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import PeopleIcon from '@mui/icons-material/People';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+
 
 interface DashboardSidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  isMobile?: boolean;
 }
 
-const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
-  isCollapsed,
-  onToggle
-}) => {
+const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isCollapsed, onToggle, isMobile }) => {
   const location = useLocation();
-  const { theme, toggleTheme }: any = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
-
 
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
 
-
   const menuItems = React.useMemo(() => {
     if (!user) return [];
-
-    if (user.role === 'admin') {
-      return [
-        { path: '/users', label: 'Users', icon: '👥' },
-      ];
-    }
-
-    // Regular user menu
+    if (user.role === 'admin') return [{ path: '/users', label: 'Users' }];
     return [
-      { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-      { path: '/transactions', label: 'Transactions', icon: '💳' },
-      { path: '/budgets', label: 'Budgets', icon: '🎯' },
+      { path: '/dashboard', label: 'Dashboard' },
+      { path: '/transactions', label: 'Transactions' },
+      { path: '/budgets', label: 'Budgets' },
     ];
   }, [user]);
 
-
-
-
-
   return (
-    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-blue-600 text-white h-full flex flex-col transition-all duration-300`}>
-      <div className="p-4 border-b border-blue-500 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center">
-            <span className="text-white">💰</span>
-          </div>
-          {!isCollapsed && (
-            <h1 className="font-bold text-xl">BudgetBuddy</h1>
-          )}
-        </div>
+    <Box
+      sx={{
+        width: isCollapsed ? 80 : 250,
+        bgcolor: 'primary.main',
+        color: 'white',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'width 0.3s ease, left 0.3s ease',
+        position: isMobile ? 'absolute' : 'relative',
+        zIndex: 1000,
+        left: isMobile && !isCollapsed ? 0 : isMobile ? '-100%' : 0,
+      }}
+    >
 
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-lg hover:bg-blue-500 transition-colors"
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="h6" sx={{ display: isCollapsed && !isMobile ? 'none' : 'block' }}>
+          BudgetBuddy
+        </Typography>
+
+        <Button onClick={onToggle} sx={{ color: 'white', minWidth: 0 }}>
+          {isMobile
+            ? '' // below md, we do not show an icon for collapsing
+            : isCollapsed
+              ? <ChevronRightIcon />
+              : <ChevronLeftIcon />
+          }
+        </Button>
+
+
+      </Box>
+
+
+      <Box sx={{ p: 2, display: 'flex', justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start' }}>
+        <IconButton
+          onClick={toggleTheme}
+          sx={{
+            bgcolor: theme === 'dark' ? 'grey.700' : 'grey.300',
+            transition: '0.3s',
+            color: theme === 'dark' ? 'yellow' : 'black',
+          }}
         >
-          {isCollapsed ? '➡️' : '⬅️'}
-        </button>
-      </div>
+          {theme === 'dark' ? <Brightness7Icon /> : <DarkModeIcon />}
+        </IconButton>
+      </Box>
 
-      <div className="p-4 border-b border-blue-500">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center">
-            <span className="text-white">👤</span>
-          </div>
-          {!isCollapsed && (
-            <div>
-              <p className="font-semibold">User Name</p>
-              <p className="text-blue-200 text-sm">View Profile</p>
-            </div>
-          )}
-        </div>
-        <div className="mt-4 flex items-center justify-between">
-          {!isCollapsed && (
-            <span className="text-blue-200 text-sm">Dark Mode</span>
-          )}
-
-          <button
-            onClick={toggleTheme}
-            className={`w-12 h-6 rounded-full p-1 transition-colors ${theme === 'dark' ? 'bg-blue-400' : 'bg-gray-300'
-              }`}
-          >
-            <div
-              className={`w-4 h-4 bg-white rounded-full transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'
-                }`}
-            ></div>
-          </button>
-        </div>
-      </div>
-
-      <nav className="flex-1 p-4">
+      <Box sx={{ flex: 1, p: 2 }}>
         {menuItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg mb-2 transition-colors ${location.pathname === item.path
-              ? 'bg-blue-700 text-white'
-              : 'text-blue-100 hover:bg-blue-500'
-              }`}
-            title={isCollapsed ? item.label : ''}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px',
+              borderRadius: 8,
+              marginBottom: 8,
+              textDecoration: 'none',
+              color: 'white',
+              backgroundColor: location.pathname === item.path ? '#1565c0' : 'transparent',
+              transition: 'background-color 0.3s',
+              justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
+            }}
           >
-            <span className="text-xl">{item.icon}</span>
-            {!isCollapsed && (
-              <span className="font-medium">{item.label}</span>
+
+            {isCollapsed && !isMobile ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {item.label === 'Dashboard' && <DashboardIcon />}
+                {item.label === 'Transactions' && <MonetizationOnIcon />}
+                {item.label === 'Budgets' && <PieChartIcon />}
+                {item.label === 'Users' && <PeopleIcon />}
+              </Box>
+            ) : (
+              <Typography>{item.label}</Typography>
             )}
           </Link>
         ))}
-        {/* Logout button */}
-        <button
-          onClick={() => dispatch(logoutUser())}
-          className="flex items-center px-4 py-3 rounded-lg mt-4 text-red-200 hover:bg-red-500 transition-colors w-full"
+      </Box>
+
+
+      <Divider sx={{ bgcolor: 'primary.light' }} />
+
+      {/* Bottom Buttons */}
+      <Box sx={{ p: 2, mt: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Button
+          startIcon={<SettingsIcon />}
+          sx={{
+            justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
+            color: 'white',
+            textTransform: 'none',
+          }}
         >
-          <span className="text-xl mr-2">🚪</span>
-          {!isCollapsed && <span className="font-medium">Logout</span>}
-        </button>
-      </nav>
-    </div>
+          {!isCollapsed || isMobile ? 'Settings' : ''}
+        </Button>
+
+        <Button
+          startIcon={<LogoutIcon />}
+          sx={{
+            justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
+            color: 'red',
+            textTransform: 'none',
+          }}
+          onClick={() => dispatch(logoutUser())}
+        >
+          {!isCollapsed || isMobile ? 'Logout' : ''}
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

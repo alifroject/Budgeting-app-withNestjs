@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from './store/store';
 
 //budget
-import { UserBudget } from './components/budget/BudgetUser';
+import BudgetPage from "./pages/budgets/BudgetPage";
 
 const ProtectedRoute = ({ children, role }: { children: React.ReactNode; role?: 'admin' | 'user' }) => {
   const { user, isFetched } = useSelector((state: RootState) => state.auth);
@@ -69,7 +69,7 @@ function AppContent() {
             <ThemeProvider>
               <DashboardLayout>
                 <>
-                  <UserBudget />
+                  <BudgetPage />
                 </>
               </DashboardLayout>
             </ThemeProvider>

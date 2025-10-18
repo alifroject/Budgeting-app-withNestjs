@@ -31,7 +31,6 @@ export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
         const res = await axios.get('http://localhost:3001/auth/me', {
             withCredentials: true,
         });
-        console.log('getMe response:', res.data);
         return res.data.user;
     } catch (err: any) {
         return thunkAPI.rejectWithValue(err.response?.data?.message || 'Unauthorized');
