@@ -11,108 +11,83 @@ import { getMe } from './features/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from './store/store';
 
+//budget
+import { UserBudget } from './components/budget/BudgetUser';
+
+const ProtectedRoute = ({ children, role }: { children: React.ReactNode; role?: 'admin' | 'user' }) => {
+  const { user, isFetched } = useSelector((state: RootState) => state.auth);
+
+  if (!isFetched) return <div>Loading...</div>; // Wait for getMe / loginUser
+  if (!user) return <Navigate to="/login" replace />;
+  if (role && user.role !== role) return <Navigate to="/dashboard" replace />;
+
+  return <>{children}</>;
+};
+
+
+
+
 function AppContent() {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, isLoading } = useSelector((state: RootState) => state.auth);
+  const { user, isFetched } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
+    if (!isFetched) {
+      dispatch(getMe());
+    }
+  }, [dispatch, isFetched]);
 
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Routes>
       <Route
         path="/login"
-        element={
-          user ? (
-            <Navigate to={user.role === 'admin' ? '/users' : '/dashboard'} replace />
-          ) : (
-            <PublicLayout>
-              <Login />
-            </PublicLayout>
-          )
-        }
+        element={<PublicLayout><Login /></PublicLayout>}
       />
       <Route
         path="/register"
-        element={
-          user ? (
-            <Navigate to={user.role === 'admin' ? '/users' : '/dashboard'} replace />
-          ) : (
-            <PublicLayout>
-              <Register />
-            </PublicLayout>
-          )
-        }
+        element={<PublicLayout><Register /></PublicLayout>}
       />
-      <Route path="/auth/callback" element={<OAuthCallback />} />
 
+      <Route path="/auth/callback" element={<OAuthCallback />} />
       <Route
         path="/dashboard"
         element={
-          !user ? (
-            <Navigate to="/login" replace />
-          ) : user.role === 'admin' ? (
-            <Navigate to="/users" replace />
-          ) : (
+          <ProtectedRoute role="user">
             <ThemeProvider>
               <DashboardLayout>
                 <Dashboard />
               </DashboardLayout>
             </ThemeProvider>
-          )
+          </ProtectedRoute>
         }
       />
-
-      <Route
-        path="/transactions"
-        element={
-          !user ? (
-            <Navigate to="/login" replace />
-          ) : (
-            <ThemeProvider>
-              <DashboardLayout>
-                <div>Transactions Page Coming Soon</div>
-              </DashboardLayout>
-            </ThemeProvider>
-          )
-        }
-      />
-
       <Route
         path="/budgets"
         element={
-          !user ? (
-            <Navigate to="/login" replace />
-          ) : (
+          <ProtectedRoute role="user">
             <ThemeProvider>
               <DashboardLayout>
-                <div>Budgets Page Coming Soon</div>
+                <>
+                  <UserBudget />
+                </>
               </DashboardLayout>
             </ThemeProvider>
-          )
+          </ProtectedRoute>
         }
       />
-
       <Route
         path="/users"
         element={
-          !user ? (
-            <Navigate to="/login" replace />
-          ) : user.role !== 'admin' ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
+          <ProtectedRoute role="admin">
             <ThemeProvider>
               <DashboardLayout>
                 <div>Users Page Coming Soon</div>
               </DashboardLayout>
             </ThemeProvider>
-          )
+          </ProtectedRoute>
         }
       />
-
       <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>
   );

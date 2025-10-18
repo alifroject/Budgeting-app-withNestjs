@@ -1,33 +1,40 @@
-import React from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+//redux auth
 import { useTheme } from '../../contexts/ThemeContext';
+import { RootState, AppDispatch } from '../../store/store';
+import {getMe} from '../../features/authSlice'
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
-  const { theme } = useTheme(); 
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const { theme } = useTheme();
+
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch])
 
   return (
     <div
-      className={`min-h-screen p-6 transition-colors duration-300 ${
-        theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-800'
-      }`}
+      className={`min-h-screen p-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-800'
+        }`}
     >
       <div
-        className={`rounded-lg shadow-sm p-6 mb-6 transition-colors duration-300 ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-        }`}
+        className={`rounded-lg shadow-sm p-6 mb-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          }`}
       >
         <h1
-          className={`text-2xl font-bold ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}
+          className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'
+            }`}
         >
           Welcome back, {user?.firstName}!
         </h1>
         <p
-          className={`mt-2 ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`}
+          className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}
         >
           Here's your financial overview
         </p>
@@ -55,23 +62,20 @@ const Dashboard: React.FC = () => {
         ].map((item, i) => (
           <div
             key={i}
-            className={`rounded-lg shadow-sm p-6 transition-colors duration-300 ${
-              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-            }`}
+            className={`rounded-lg shadow-sm p-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+              }`}
           >
             <h3
-              className={`text-lg font-semibold mb-2 ${
-                theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
-              }`}
+              className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
+                }`}
             >
               {item.title}
             </h3>
             <p className={`text-3xl font-bold ${item.color}`}>{item.value}</p>
             {item.sub && (
               <p
-                className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}
+                className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}
               >
                 {item.sub}
               </p>
@@ -81,15 +85,13 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div
-        className={`rounded-lg shadow-sm p-6 transition-colors duration-300 ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-        }`}
+        className={`rounded-lg shadow-sm p-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          }`}
       >
         <div className="flex justify-between items-center mb-4">
           <h2
-            className={`text-xl font-semibold ${
-              theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-            }`}
+            className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+              }`}
           >
             Recent Transactions
           </h2>
@@ -106,22 +108,19 @@ const Dashboard: React.FC = () => {
           ].map((t, i) => (
             <div
               key={i}
-              className={`flex justify-between items-center py-3 border-b ${
-                theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-              }`}
+              className={`flex justify-between items-center py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+                }`}
             >
               <div>
                 <p
-                  className={`font-medium ${
-                    theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-                  }`}
+                  className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+                    }`}
                 >
                   {t.name}
                 </p>
                 <p
-                  className={`text-sm ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                  }`}
+                  className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    }`}
                 >
                   {t.time}
                 </p>
@@ -133,14 +132,12 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div
-        className={`mt-6 rounded-lg shadow-sm p-6 transition-colors duration-300 ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-        }`}
+        className={`mt-6 rounded-lg shadow-sm p-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          }`}
       >
         <h2
-          className={`text-xl font-semibold mb-4 ${
-            theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-          }`}
+          className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+            }`}
         >
           Quick Actions
         </h2>

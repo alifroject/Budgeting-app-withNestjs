@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+//redux
+import { useDispatch, useSelector } from 'react-redux';
+import { getMe, logoutUser } from '../../features/authSlice';
+import { RootState, AppDispatch } from '../../store/store';
 
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -13,22 +18,15 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   onToggle
 }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { theme, toggleTheme }: any = useTheme();
-  const [user, setUser] = useState<{ id: number; email: string; role: string } | null>(null);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
 
 
   useEffect(() => {
-    fetch('http://localhost:3001/auth/me', {
-      credentials: 'include'
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Not authenticated');
-        return res.json();
-      })
-      .then(data => setUser(data))
-      .catch(() => setUser(null));
-  }, []);
+    dispatch(getMe());
+  }, [dispatch]);
+
 
   const menuItems = React.useMemo(() => {
     if (!user) return [];
@@ -48,21 +46,6 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   }, [user]);
 
 
-
-  const handleLogout = async () => {
-    try {
-      await fetch('http://localhost:3001/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      setUser(null);
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 50);
-    } catch (error) {
-      console.error('Logout failed', error);
-    }
-  };
 
 
 
@@ -135,7 +118,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         ))}
         {/* Logout button */}
         <button
-          onClick={handleLogout}
+          onClick={() => dispatch(logoutUser())}
           className="flex items-center px-4 py-3 rounded-lg mt-4 text-red-200 hover:bg-red-500 transition-colors w-full"
         >
           <span className="text-xl mr-2">🚪</span>

@@ -109,14 +109,13 @@ export const UserBudget: React.FC = () => {
                                     </td>
                                     <td className="py-3 px-6 text-center">
                                         <div className="flex justify-center items-center gap-3">
-                                            <Link
-                                                to={`/edit/${user.uuid}`}
+                                            <button
                                                 className="px-3 py-1.5 text-sm font-medium rounded-md 
                  bg-blue-500 text-white hover:bg-blue-600 
                  shadow-sm hover:shadow-md transition-all duration-200"
                                             >
                                                 Edit
-                                            </Link>
+                                            </button>
 
                                             <button
                                                 onClick={() => deleteUsers(item.id)}
