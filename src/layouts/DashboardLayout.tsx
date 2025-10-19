@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useEffect } from 'react';
-import DashboardSidebar from '../components/dashboard/dahboard_sidebar';
+import DashboardSidebar from '../components/sidebar/dahboard_sidebar';
 
 interface DashboardLayoutProps {
   children: ReactNode;
