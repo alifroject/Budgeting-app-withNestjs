@@ -1,11 +1,15 @@
-import React from "react";
+import React, {useState} from "react";
 import { UserBudget } from "./BudgetUser";
 import { useTheme } from "../../contexts/ThemeContext";
+import { EditBudget } from "./EditBudget";
+import { BudgetItem } from "../../types/budget";
 
 export default function MainBudget() {
   const { theme } = useTheme();
 
   const isDark = theme === "dark";
+  const [selectedBudget, setSelectedBudget] = useState<BudgetItem | null>(null);
+
 
   return (
     <div
@@ -25,14 +29,14 @@ export default function MainBudget() {
 
 
           <div className="flex-[8] w-full h-full min-w-0 overflow-x-hidden overflow-y-hidden">
-            <UserBudget />
+            <UserBudget onEdit={setSelectedBudget} />
           </div>
         </div>
         <div
-          className={`w-[30%] rounded-2xl shadow-md p-4 flex flex-col justify-center transition-colors duration-300 ${isDark ? "bg-gray-800" : "bg-green-100"
+          className={`w-[30%] rounded-2xl shadow-md p-4 transition-colors duration-300 ${isDark ? "bg-gray-800" : "bg-white-100"
             }`}
         >
-          <p className="font-semibold">Right Column (100%)</p>
+          <EditBudget selectedBudget={selectedBudget} />
         </div>
       </div>
       <div

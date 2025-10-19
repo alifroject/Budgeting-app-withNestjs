@@ -1,4 +1,3 @@
-// src/components/budget/UserBudget.tsx
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/store";
@@ -7,7 +6,11 @@ import { useBudget } from "../../hooks/useBudget";
 import { BudgetItem } from "../../types/budget";
 import { Table } from "../common/Table";
 
-export const UserBudget: React.FC = () => {
+interface UserBudgetProps {
+  onEdit?: (item: BudgetItem) => void
+}
+
+export const UserBudget: React.FC<UserBudgetProps> = ({onEdit}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { budget, deleteBudget } = useBudget();
 
@@ -30,6 +33,7 @@ export const UserBudget: React.FC = () => {
       renderActions={(item) => (
         <div className="flex justify-center items-center gap-3">
           <button
+           onClick={() => onEdit && onEdit(item)}
             className="px-3 py-1.5 text-sm font-medium rounded-md 
           bg-blue-500 text-white hover:bg-blue-600 
           shadow-sm hover:shadow-md transition-all duration-200"
