@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { BudgetItem } from "../../types/budget";
 import { Category } from "@mui/icons-material";
+import { useBudget } from "../../hooks/useBudget";
 
 interface EditBudgetProps {
     selectedBudget: BudgetItem | null;
 }
 
 export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
+    const { editBudget } = useBudget();
 
     const [form, setForm] = useState({
         title: "",
@@ -40,10 +42,30 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
         setFormKey(prev => prev + 1);
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Update data", form)
-    }
+        if (!selectedBudget) return;
+
+        const payload = {
+            title: form.title.trim() || undefined,
+            category: form.category.trim() || undefined,
+            limitAmount: form.limitAmount !== "" ? form.limitAmount.toString() : undefined, 
+            startDate: form.startDate || undefined,
+            endDate: form.endDate || undefined,
+        };
+
+        const cleanPayload = Object.fromEntries(
+            Object.entries(payload).filter(([_, value]) => value !== undefined)
+        );
+
+        console.log('PATCH payload:', cleanPayload);
+
+        try {
+            await editBudget(selectedBudget.id, cleanPayload);
+        } catch (error) {
+            console.error('Failed to update budget:', error);
+        }
+    };
 
     return (
         <>
