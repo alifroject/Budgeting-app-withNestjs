@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import muiTheme from "./contexts/muiTheme"; 
+
 import DashboardLayout from './layouts/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
 import Login from './pages/public/login/Login';
@@ -95,9 +98,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <MuiThemeProvider theme={muiTheme}>
+      <Router>
+        <AppContent />
+      </Router>
+    </MuiThemeProvider>
   );
 }
 
