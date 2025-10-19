@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { UserBudget } from "./BudgetUser";
 import { useTheme } from "../../contexts/ThemeContext";
 import { EditBudget } from "./EditBudget";
@@ -29,7 +29,8 @@ export default function MainBudget() {
 
 
           <div className="flex-[8] w-full h-full min-w-0 overflow-x-hidden overflow-y-hidden">
-            <UserBudget onEdit={setSelectedBudget} />
+            <UserBudget onEdit={(item) => setSelectedBudget({ ...item })} />
+
           </div>
         </div>
         <div

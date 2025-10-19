@@ -14,7 +14,8 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
         limitAmount: "",
         startDate: "",
         endDate: "",
-    })
+    });
+    const [formKey, setFormKey] = useState(0);
 
     useEffect(() => {
         if (selectedBudget) {
@@ -22,19 +23,21 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
                 title: selectedBudget.title,
                 category: selectedBudget.category,
                 limitAmount: selectedBudget.limitAmount.toString(),
-                startDate: selectedBudget.startDate,
-                endDate: selectedBudget.endDate,
+                startDate: selectedBudget.startDate.split("T")[0],
+                endDate: selectedBudget.endDate.split("T")[0],
             })
         } else {
             setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
         }
-    })
+        setFormKey(prev => prev + 1);
+    }, [selectedBudget])
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
     const handleRefresh = () => {
         setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
+        setFormKey(prev => prev + 1);
     }
 
     const handleSubmit = (e: React.FormEvent) => {
