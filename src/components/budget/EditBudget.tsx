@@ -5,9 +5,10 @@ import { useBudget } from "../../hooks/useBudget";
 
 interface EditBudgetProps {
     selectedBudget: BudgetItem | null;
+    onBudgetUpdated: () => void
 }
 
-export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
+export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudgetUpdated }) => {
     const { editBudget } = useBudget();
 
     const [form, setForm] = useState({
@@ -49,7 +50,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
         const payload = {
             title: form.title.trim() || undefined,
             category: form.category.trim() || undefined,
-            limitAmount: form.limitAmount !== "" ? form.limitAmount.toString() : undefined, 
+            limitAmount: form.limitAmount !== "" ? form.limitAmount.toString() : undefined,
             startDate: form.startDate || undefined,
             endDate: form.endDate || undefined,
         };
@@ -62,6 +63,10 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget }) => {
 
         try {
             await editBudget(selectedBudget.id, cleanPayload);
+            onBudgetUpdated?.();
+            setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
+            setFormKey(prev => prev + 1);
+
         } catch (error) {
             console.error('Failed to update budget:', error);
         }

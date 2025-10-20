@@ -3,12 +3,17 @@ import { UserBudget } from "./BudgetUser";
 import { useTheme } from "../../contexts/ThemeContext";
 import { EditBudget } from "./EditBudget";
 import { BudgetItem } from "../../types/budget";
+import { useBudget } from "../../hooks/useBudget";
 
 export default function MainBudget() {
   const { theme } = useTheme();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const isDark = theme === "dark";
   const [selectedBudget, setSelectedBudget] = useState<BudgetItem | null>(null);
+  const handleBudgetUpdated = () => {
+   setRefreshKey(prev => prev + 1);
+  };
 
 
   return (
@@ -29,7 +34,7 @@ export default function MainBudget() {
 
 
           <div className="flex-[8] w-full h-full min-w-0 overflow-x-hidden overflow-y-hidden">
-            <UserBudget onEdit={(item) => setSelectedBudget({ ...item })} />
+            <UserBudget key={refreshKey}  onEdit={(item) => setSelectedBudget({ ...item })} />
 
           </div>
         </div>
@@ -37,7 +42,10 @@ export default function MainBudget() {
           className={`w-[30%] rounded-2xl shadow-md p-4 transition-colors duration-300 ${isDark ? "bg-gray-800" : "bg-white-100"
             }`}
         >
-          <EditBudget selectedBudget={selectedBudget} />
+          <EditBudget
+            selectedBudget={selectedBudget}
+            onBudgetUpdated={handleBudgetUpdated}
+          />
         </div>
       </div>
       <div
