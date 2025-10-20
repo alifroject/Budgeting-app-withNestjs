@@ -19,6 +19,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
         endDate: "",
     });
     const [formKey, setFormKey] = useState(0);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (selectedBudget) {
@@ -45,32 +46,41 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedBudget) return;
+
+        if (!selectedBudget) {
+            alert("No budget selected!");
+            return;
+        }
+
+        const newErrors: { [key: string]: string } = {};
+
+        if (!form.title.trim()) newErrors.title = "Title is required";
+        if (!form.category.trim()) newErrors.category = "Category is required";
+        if (!form.limitAmount) newErrors.limitAmount = "Limit Amount is required";
+        if (!form.startDate) newErrors.startDate = "Start Date is required";
+        if (!form.endDate) newErrors.endDate = "End Date is required";
+
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
 
         const payload = {
-            title: form.title.trim() || undefined,
-            category: form.category.trim() || undefined,
-            limitAmount: form.limitAmount !== "" ? form.limitAmount.toString() : undefined,
-            startDate: form.startDate || undefined,
-            endDate: form.endDate || undefined,
+            title: form.title.trim(),
+            category: form.category.trim(),
+            limitAmount: Number(form.limitAmount),
+            startDate: form.startDate,
+            endDate: form.endDate,
         };
 
-        const cleanPayload = Object.fromEntries(
-            Object.entries(payload).filter(([_, value]) => value !== undefined)
-        );
-
-        console.log('PATCH payload:', cleanPayload);
-
         try {
-            await editBudget(selectedBudget.id, cleanPayload);
+            await editBudget(selectedBudget.id, payload);
             onBudgetUpdated?.();
             setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
-            setFormKey(prev => prev + 1);
-
+            setErrors({});
         } catch (error) {
-            console.error('Failed to update budget:', error);
+            console.error("Failed to update budget:", error);
         }
     };
+
 
     return (
         <>
@@ -90,6 +100,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
                                 onChange={handleChange}
                                 className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                             />
+                            {errors.title && <span className="text-red-500 text-sm mt-1">{errors.title}</span>}
                         </div>
 
                         <div className="flex flex-col">
@@ -101,6 +112,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
                                 onChange={handleChange}
                                 className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                             />
+                             {errors.title && <span className="text-red-500 text-sm mt-1">{errors.category}</span>}
                         </div>
 
                         <div className="flex flex-col">
@@ -112,6 +124,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
                                 onChange={handleChange}
                                 className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                             />
+                             {errors.title && <span className="text-red-500 text-sm mt-1">{errors.limitAmount}</span>}
                         </div>
 
                         <div className="flex flex-col">
@@ -123,6 +136,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
                                 onChange={handleChange}
                                 className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                             />
+                             {errors.title && <span className="text-red-500 text-sm mt-1">{errors.startDate}</span>}
                         </div>
 
                         <div className="flex flex-col">
@@ -133,9 +147,9 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
                                 value={form.endDate}
                                 onChange={handleChange}
                                 className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                            />
+                            />{errors.title && <span className="text-red-500 text-sm mt-1">{errors.endDate}</span>}
                         </div>
-
+                       
                         <div className="flex gap-2 mt-2">
                             <button
                                 type="submit"
