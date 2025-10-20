@@ -3,6 +3,7 @@ import { UserBudget } from "./BudgetUser";
 import { useTheme } from "../../contexts/ThemeContext";
 import { EditBudget } from "./EditBudget";
 import { BudgetItem } from "../../types/budget";
+import BudgetHeader from "./BudgetHeader";
 
 export default function MainBudget() {
   const { theme } = useTheme();
@@ -18,7 +19,7 @@ export default function MainBudget() {
   };
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1000);
+    const handleResize = () => setIsMobile(window.innerWidth < 968);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -31,15 +32,21 @@ export default function MainBudget() {
     >
       <div className={`flex flex-col md:flex-row gap-6 flex-1`}>
         <div className="flex-1 flex flex-col gap-6">
-          <div
-            className={`rounded-2xl shadow-md p-6 transition-colors duration-300 ${isDark ? "bg-gray-800" : "bg-blue-100"
-              }`}
-          >
-            <p className="font-semibold text-lg">Card 1 (20%)</p>
+          <div className="p-10">
+            <BudgetHeader>
+              <>
+                <button
+                  className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                  onClick={() => setSelectedBudget(null)}
+                >
+                  Add
+                </button>
+              </>
+            </BudgetHeader>
           </div>
 
           <div className="w-full min-w-0 overflow-x-auto max-h-[500px] rounded-2xl shadow-md">
-            <div className="min-w-[800px]">
+            <div className="min-w-[650px]">
               <UserBudget
                 key={refreshKey}
                 onEdit={(item) => setSelectedBudget({ ...item })}
@@ -57,6 +64,7 @@ export default function MainBudget() {
           >
             <EditBudget
               selectedBudget={selectedBudget}
+              setSelectedBudget={setSelectedBudget}
               onBudgetUpdated={handleBudgetUpdated}
             />
           </div>
@@ -81,6 +89,7 @@ export default function MainBudget() {
             </button>
             <EditBudget
               selectedBudget={selectedBudget}
+              setSelectedBudget={setSelectedBudget}
               onBudgetUpdated={handleBudgetUpdated}
             />
           </div>

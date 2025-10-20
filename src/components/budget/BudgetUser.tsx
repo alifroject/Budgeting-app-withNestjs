@@ -31,10 +31,10 @@ export const UserBudget: React.FC<UserBudgetProps> = ({ onEdit }) => {
       columns={columns}
       data={budget}
       renderActions={(item) => (
-        <div className="flex flex-col sm:flex-row p-4 justify-center items-center gap-3 w-full">
+        <div className="flex flex-col sm:flex-row p-2 justify-center items-center gap-2 w-full">
           <button
             onClick={() => onEdit && onEdit(item)}
-            className="flex-1 px-3 py-2 text-xs sm:text-sm md:text-base font-medium rounded-md 
+            className="flex-1 px-2 py-1 text-xs font-medium rounded-md 
       bg-blue-500 text-white hover:bg-blue-600 
       shadow-sm hover:shadow-md transition-all duration-200"
           >
@@ -43,7 +43,7 @@ export const UserBudget: React.FC<UserBudgetProps> = ({ onEdit }) => {
 
           <button
             onClick={() => deleteBudget(item.id)}
-            className="flex-1 px-3 py-2 text-xs sm:text-sm md:text-base font-medium rounded-md 
+            className="flex-1 px-2 py-1 text-xs font-medium rounded-md 
       bg-red-500 text-white hover:bg-red-600 
       shadow-sm hover:shadow-md transition-all duration-200"
           >

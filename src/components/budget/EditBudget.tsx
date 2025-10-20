@@ -3,13 +3,17 @@ import { BudgetItem } from "../../types/budget";
 import { Category } from "@mui/icons-material";
 import { useBudget } from "../../hooks/useBudget";
 
+
 interface EditBudgetProps {
     selectedBudget: BudgetItem | null;
+    setSelectedBudget: (item: BudgetItem | null) => void; 
     onBudgetUpdated: () => void
 }
 
-export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudgetUpdated }) => {
-    const { editBudget } = useBudget();
+export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelectedBudget, onBudgetUpdated }) => {
+    //hooks
+    const { editBudget, addBudget } = useBudget();
+    const isEdit = selectedBudget !== null;
 
     const [form, setForm] = useState({
         title: "",
@@ -42,15 +46,13 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
     const handleRefresh = () => {
         setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
         setFormKey(prev => prev + 1);
+        if (selectedBudget) setSelectedBudget(null);
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!selectedBudget) {
-            alert("No budget selected!");
-            return;
-        }
+    
 
         const newErrors: { [key: string]: string } = {};
 
@@ -72,7 +74,12 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
         };
 
         try {
-            await editBudget(selectedBudget.id, payload);
+            if (isEdit) {
+                await editBudget(selectedBudget!.id, payload);
+            } else {
+                await addBudget(payload);
+            }
+
             onBudgetUpdated?.();
             setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
             setErrors({});
@@ -87,86 +94,82 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, onBudget
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md w-full flex flex-col gap-4">
                 <h2 className="text-xl font-bold mb-4">Edit Budget</h2>
 
-                {!selectedBudget && <p className="text-gray-500 dark:text-gray-400">Select a budget to edit</p>}
 
-                {selectedBudget && (
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Title</label>
-                            <input
-                                name="title"
-                                type="text"
-                                value={form.title}
-                                onChange={handleChange}
-                                className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                            />
-                            {errors.title && <span className="text-red-500 text-sm mt-1">{errors.title}</span>}
-                        </div>
 
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Category</label>
-                            <input
-                                name="category"
-                                type="text"
-                                value={form.category}
-                                onChange={handleChange}
-                                className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                            />
-                             {errors.title && <span className="text-red-500 text-sm mt-1">{errors.category}</span>}
-                        </div>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Title</label>
+                        <input
+                            name="title"
+                            type="text"
+                            value={form.title}
+                            onChange={handleChange}
+                            className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                        />
+                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.title}</span>}
+                    </div>
 
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Limit Amount</label>
-                            <input
-                                name="limitAmount"
-                                type="number"
-                                value={form.limitAmount}
-                                onChange={handleChange}
-                                className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                            />
-                             {errors.title && <span className="text-red-500 text-sm mt-1">{errors.limitAmount}</span>}
-                        </div>
+                    <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Category</label>
+                        <input
+                            name="category"
+                            type="text"
+                            value={form.category}
+                            onChange={handleChange}
+                            className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                        />
+                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.category}</span>}
+                    </div>
 
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-                            <input
-                                name="startDate"
-                                type="date"
-                                value={form.startDate}
-                                onChange={handleChange}
-                                className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                            />
-                             {errors.title && <span className="text-red-500 text-sm mt-1">{errors.startDate}</span>}
-                        </div>
+                    <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Limit Amount</label>
+                        <input
+                            name="limitAmount"
+                            type="number"
+                            value={form.limitAmount}
+                            onChange={handleChange}
+                            className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                        />
+                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.limitAmount}</span>}
+                    </div>
 
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">End Date</label>
-                            <input
-                                name="endDate"
-                                type="date"
-                                value={form.endDate}
-                                onChange={handleChange}
-                                className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                            />{errors.title && <span className="text-red-500 text-sm mt-1">{errors.endDate}</span>}
-                        </div>
-                       
-                        <div className="flex gap-2 mt-2">
-                            <button
-                                type="submit"
-                                className="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition-all"
-                            >
-                                Save
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleRefresh}
-                                className="flex-1 bg-gray-300 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-400 transition-all dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                            >
-                                Refresh
-                            </button>
-                        </div>
-                    </form>
-                )}
+                    <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Start Date</label>
+                        <input
+                            name="startDate"
+                            type="date"
+                            value={form.startDate}
+                            onChange={handleChange}
+                            className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                        />
+                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.startDate}</span>}
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">End Date</label>
+                        <input
+                            name="endDate"
+                            type="date"
+                            value={form.endDate}
+                            onChange={handleChange}
+                            className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                        />{errors.title && <span className="text-red-500 text-sm mt-1">{errors.endDate}</span>}
+                    </div>
+
+                    <div className="flex gap-2 mt-2">
+                        <button type="submit" className="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition-all">
+                            {isEdit ? "Save Changes" : "Add Budget"}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleRefresh}
+                            className="flex-1 bg-gray-300 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-400 transition-all dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                </form>
+
             </div>
         </>
     );
