@@ -7,6 +7,39 @@ export const useBudget = () => {
   const [budget, setBudget] = useState<BudgetItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const addBudget = async (newData: Omit<BudgetItem, "id">): Promise<void> => {
+    try {
+      setLoading(true);
+      const res = await axios.post("http://localhost:3001/budget", newData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setBudget(res.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to add budget - Full error details:", {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          message: error.message,
+          url: error.config?.url,
+          method: error.config?.method,
+        });
+        const backendError = error.response?.data;
+        alert(`Failed to add budget: ${backendError?.message || backendError?.error || error.message}`);
+      } else {
+        console.error("Failed to add budget:", error);
+        alert("Failed to add budget. Please try again.");
+      }
+      throw error;
+
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const getBudget = async () => {
     try {
       setLoading(true);
@@ -83,5 +116,5 @@ export const useBudget = () => {
     getBudget();
   }, []);
 
-  return { budget, loading, deleteBudget, getBudget, editBudget };
+  return { budget, loading, deleteBudget, getBudget, editBudget, addBudget };
 };
