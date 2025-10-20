@@ -10,7 +10,7 @@ interface UserBudgetProps {
   onEdit?: (item: BudgetItem) => void
 }
 
-export const UserBudget: React.FC<UserBudgetProps> = ({onEdit}) => {
+export const UserBudget: React.FC<UserBudgetProps> = ({ onEdit }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { budget, deleteBudget } = useBudget();
 
@@ -31,25 +31,26 @@ export const UserBudget: React.FC<UserBudgetProps> = ({onEdit}) => {
       columns={columns}
       data={budget}
       renderActions={(item) => (
-        <div className="flex justify-center items-center gap-3">
+        <div className="flex flex-col sm:flex-row p-4 justify-center items-center gap-3 w-full">
           <button
-           onClick={() => onEdit && onEdit(item)}
-            className="px-3 py-1.5 text-sm font-medium rounded-md 
-          bg-blue-500 text-white hover:bg-blue-600 
-          shadow-sm hover:shadow-md transition-all duration-200"
+            onClick={() => onEdit && onEdit(item)}
+            className="flex-1 px-3 py-2 text-xs sm:text-sm md:text-base font-medium rounded-md 
+      bg-blue-500 text-white hover:bg-blue-600 
+      shadow-sm hover:shadow-md transition-all duration-200"
           >
             Edit
           </button>
 
           <button
             onClick={() => deleteBudget(item.id)}
-            className="px-3 py-1.5 text-sm font-medium rounded-md 
-          bg-red-500 text-white hover:bg-red-600 
-          shadow-sm hover:shadow-md transition-all duration-200"
+            className="flex-1 px-3 py-2 text-xs sm:text-sm md:text-base font-medium rounded-md 
+      bg-red-500 text-white hover:bg-red-600 
+      shadow-sm hover:shadow-md transition-all duration-200"
           >
             Delete
           </button>
         </div>
+
       )}
     />
   );
