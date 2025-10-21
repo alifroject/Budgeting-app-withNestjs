@@ -19,7 +19,7 @@ export const UserBudget: React.FC<UserBudgetProps> = ({ onEdit }) => {
   }, [dispatch]);
 
   const columns = [
-    { key: "title", label: "Title" },
+    { key: "name", label: "name" },
     { key: "category", label: "Category" },
     { key: "limitAmount", label: "Limit Amount" },
     { key: "startDate", label: "Start Date" },

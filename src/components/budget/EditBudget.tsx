@@ -25,11 +25,13 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
 
 
     const [form, setForm] = useState({
-        title: "",
+        name: "",
         category: "",
         limitAmount: "",
         startDate: "",
         endDate: "",
+        isRecurring: false,
+
     });
     const [formKey, setFormKey] = useState(0);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -37,14 +39,15 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
     useEffect(() => {
         if (isEdit) {
             setForm({
-                title: selectedBudget!.title || "",
+                name: selectedBudget!.name || "",
                 category: selectedBudget!.category || "",
                 limitAmount: selectedBudget!.limitAmount?.toString() || "",
                 startDate: selectedBudget!.startDate?.split("T")[0] || "",
                 endDate: selectedBudget!.endDate?.split("T")[0] || "",
+                isRecurring: selectedBudget!.isRecurring || false
             });
         } else {
-            setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
+            setForm({ name: "", category: "", limitAmount: "", startDate: "", endDate: "", isRecurring: false });
         }
         setFormKey(prev => prev + 1);
     }, [selectedBudget]);
@@ -55,7 +58,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
     }
 
     const handleRefresh = () => {
-        setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
+        setForm({ name: "", category: "", limitAmount: "", startDate: "", endDate: "", isRecurring: false });
         setFormKey(prev => prev + 1);
         if (isEdit) {
             setSelectedBudget(null);
@@ -69,7 +72,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
 
         const newErrors: { [key: string]: string } = {};
 
-        if (!form.title.trim()) newErrors.title = "Title is required";
+        if (!form.name.trim()) newErrors.name = "Name is required";
         if (!form.category.trim()) newErrors.category = "Category is required";
         if (!form.limitAmount) newErrors.limitAmount = "Limit Amount is required";
         if (!form.startDate) newErrors.startDate = "Start Date is required";
@@ -79,11 +82,12 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
         if (Object.keys(newErrors).length > 0) return;
 
         const payload = {
-            title: form.title.trim(),
+            name: form.name.trim(),
             category: form.category.trim(),
             limitAmount: Number(form.limitAmount),
             startDate: form.startDate,
             endDate: form.endDate,
+            isRecurring: form.isRecurring,
         };
 
         try {
@@ -95,7 +99,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
 
             onBudgetUpdated?.();
             setSelectedBudget(null);
-            setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
+            setForm({ name: "", category: "", limitAmount: "", startDate: "", endDate: "", isRecurring: false });
             setErrors({});
         } catch (error) {
             console.error("Failed to update budget:", error);
@@ -114,15 +118,15 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div className="flex flex-col">
-                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Title</label>
+                        <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Name</label>
                         <input
-                            name="title"
+                            name="name"
                             type="text"
-                            value={form.title}
+                            value={form.name}
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                         />
-                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.title}</span>}
+                        {errors.name && <span className="text-red-500 text-sm mt-1">{errors.name}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -134,7 +138,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                         />
-                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.category}</span>}
+                        {errors.name && <span className="text-red-500 text-sm mt-1">{errors.category}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -146,7 +150,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                         />
-                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.limitAmount}</span>}
+                        {errors.name && <span className="text-red-500 text-sm mt-1">{errors.limitAmount}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -158,7 +162,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                         />
-                        {errors.title && <span className="text-red-500 text-sm mt-1">{errors.startDate}</span>}
+                        {errors.name && <span className="text-red-500 text-sm mt-1">{errors.startDate}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -169,8 +173,17 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
                             value={form.endDate}
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                        />{errors.title && <span className="text-red-500 text-sm mt-1">{errors.endDate}</span>}
+                        />{errors.name && <span className="text-red-500 text-sm mt-1">{errors.endDate}</span>}
                     </div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="isRecurring"
+                            checked={form.isRecurring}
+                            onChange={e => setForm({ ...form, isRecurring: e.target.checked })}
+                        />
+                        Recurring
+                    </label>
 
                     <div className="flex gap-2 mt-2">
                         <button type="submit" className="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition-all">

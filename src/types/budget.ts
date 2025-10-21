@@ -1,9 +1,10 @@
 export interface BudgetItem {
   id: number;
-  title: string;
+  name: string;
   category: string;
   limitAmount: number;
   startDate: string;
   endDate: string;
   createdAt?: string;
+  isRecurring: boolean;
 }
