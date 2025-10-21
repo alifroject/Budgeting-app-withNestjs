@@ -1,9 +1,16 @@
 import React from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { BudgetItem } from "../../types/budget";
+import { Button } from "@mui/material";
 
 
-const BudgetHeader: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+interface BudgetHeaderProps {
+    children?: React.ReactNode;
+    onAdd?: () => void;
+
+}
+
+const BudgetHeader: React.FC<BudgetHeaderProps> = ({ children, onAdd }) => {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
@@ -15,7 +22,14 @@ const BudgetHeader: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
         >
             <h2 className="font-bold text-lg">Budget Header</h2>
             {children}
-
+            {onAdd && (
+                <button
+                    onClick={onAdd}
+                    className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                >
+                    Add Budget
+                </button>
+            )}
         </div>
     );
 };

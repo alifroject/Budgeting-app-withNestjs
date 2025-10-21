@@ -32,18 +32,11 @@ export default function MainBudget() {
     >
       <div className={`flex flex-col md:flex-row gap-6 flex-1`}>
         <div className="flex-1 flex flex-col gap-6">
-          <div className="p-10">
-            <BudgetHeader>
-              <>
-                <button
-                  className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
-                  onClick={() => setSelectedBudget(null)}
-                >
-                  Add
-                </button>
-              </>
-            </BudgetHeader>
-          </div>
+          <BudgetHeader
+            onAdd={isMobile ? () => setSelectedBudget({} as BudgetItem) : undefined}
+          />
+
+
 
           <div className="w-full min-w-0 overflow-x-auto max-h-[500px] rounded-2xl shadow-md">
             <div className="min-w-[650px]">
@@ -95,6 +88,7 @@ export default function MainBudget() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -6,14 +6,24 @@ import { useBudget } from "../../hooks/useBudget";
 
 interface EditBudgetProps {
     selectedBudget: BudgetItem | null;
-    setSelectedBudget: (item: BudgetItem | null) => void; 
+    setSelectedBudget: (item: BudgetItem | null) => void;
     onBudgetUpdated: () => void
 }
 
-export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelectedBudget, onBudgetUpdated }) => {
+export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelectedBudget, onBudgetUpdated }) => {
     //hooks
     const { editBudget, addBudget } = useBudget();
-    const isEdit = selectedBudget !== null;
+    const isEdit = selectedBudget !== null && Object.keys(selectedBudget).length > 0;
+
+    //screen
+    const [isMdUp, setIsMdUp] = useState(window.innerWidth >= 968);
+    useEffect(() => {
+        const handleResize = () => setIsMdUp(window.innerWidth >= 968);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+
 
     const [form, setForm] = useState({
         title: "",
@@ -26,19 +36,21 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelect
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
-        if (selectedBudget) {
+        if (isEdit) {
             setForm({
-                title: selectedBudget.title,
-                category: selectedBudget.category,
-                limitAmount: selectedBudget.limitAmount.toString(),
-                startDate: selectedBudget.startDate.split("T")[0],
-                endDate: selectedBudget.endDate.split("T")[0],
-            })
+                title: selectedBudget!.title || "",
+                category: selectedBudget!.category || "",
+                limitAmount: selectedBudget!.limitAmount?.toString() || "",
+                startDate: selectedBudget!.startDate?.split("T")[0] || "",
+                endDate: selectedBudget!.endDate?.split("T")[0] || "",
+            });
         } else {
             setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
         }
         setFormKey(prev => prev + 1);
-    }, [selectedBudget])
+    }, [selectedBudget]);
+
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
@@ -46,13 +58,15 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelect
     const handleRefresh = () => {
         setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
         setFormKey(prev => prev + 1);
-        if (selectedBudget) setSelectedBudget(null);
+        if (isEdit) {
+            setSelectedBudget(null);
+        }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-    
+
 
         const newErrors: { [key: string]: string } = {};
 
@@ -81,6 +95,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelect
             }
 
             onBudgetUpdated?.();
+            setSelectedBudget(null);
             setForm({ title: "", category: "", limitAmount: "", startDate: "", endDate: "" });
             setErrors({});
         } catch (error) {
@@ -92,7 +107,9 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelect
     return (
         <>
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md w-full flex flex-col gap-4">
-                <h2 className="text-xl font-bold mb-4">Edit Budget</h2>
+                <h2 className="text-xl font-bold mb-4">
+                    {isEdit ? "Edit Budget" : "Add Budget"}
+                </h2>
 
 
 
@@ -160,13 +177,17 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget,setSelect
                         <button type="submit" className="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition-all">
                             {isEdit ? "Save Changes" : "Add Budget"}
                         </button>
-                        <button
-                            type="button"
-                            onClick={handleRefresh}
-                            className="flex-1 bg-gray-300 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-400 transition-all dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                        >
-                            Refresh
-                        </button>
+                        {isMdUp && (
+                            <button
+                                type="button"
+                                onClick={handleRefresh}
+                                className="flex-1 bg-gray-300 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-400 transition-all dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                            >
+                                Refresh
+                            </button>
+                        )}
+
+
                     </div>
                 </form>
 
