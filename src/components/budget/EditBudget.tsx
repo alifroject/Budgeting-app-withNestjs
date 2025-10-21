@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { BudgetItem } from "../../types/budget";
-import { Category } from "@mui/icons-material";
 import { useBudget } from "../../hooks/useBudget";
 
 
