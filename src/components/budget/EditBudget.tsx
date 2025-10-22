@@ -157,7 +157,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
                         <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">Start Date</label>
                         <input
                             name="startDate"
-                            type="date"
+                            type="datetime-local"
                             value={form.startDate}
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
@@ -169,7 +169,7 @@ export const EditBudget: React.FC<EditBudgetProps> = ({ selectedBudget, setSelec
                         <label className="mb-1 font-medium text-gray-700 dark:text-gray-300">End Date</label>
                         <input
                             name="endDate"
-                            type="date"
+                            type="datetime-local"
                             value={form.endDate}
                             onChange={handleChange}
                             className="rounded-md border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
