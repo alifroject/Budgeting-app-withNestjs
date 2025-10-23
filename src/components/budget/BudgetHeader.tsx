@@ -20,7 +20,7 @@ const BudgetHeader: React.FC<BudgetHeaderProps> = ({ children, onAdd }) => {
                 }`}
 
         >
-            <h2 className="font-bold text-lg">Budget Header</h2>
+            <h2 className="font-bold text-lg">Budget budget  Header</h2>
             {children}
             {onAdd && (
                 <button
